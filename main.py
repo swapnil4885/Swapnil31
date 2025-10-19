@@ -1,31 +1,27 @@
-from flask import Flask, request
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import telegram
-import os
+import logging
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
-TOKEN = os.getenv("BOT_TOKEN", "8306875717:AAG34WyLvyi9qvCzQ4mppqUpu3TweHSTrO4")
-APP_URL = os.getenv("APP_URL", "https://swapnil31-6.onrender.com")
+# लॉगिंग सुरू करतो
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-app = Flask(__name__)
+# /start कमांड
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("👋 नमस्कार Swapnil! मी तुझा बोट चालू आहे ✅")
 
-updater = Updater(TOKEN, use_context=True)
-dispatcher = updater.dispatcher
+# साधा text message
+async def reply_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("📩 मेसेज मिळाला! धन्यवाद 🙏")
 
-def start(update, context):
-    update.message.reply_text("नमस्कार Swapnil! तुझा bot चालू आहे 🚀")
+# मुख्य फंक्शन
+def main():
+    app = ApplicationBuilder().token("8306875717:AAG34WyLvyi9qvCzQ4mppqUpu3TweHSTrO4").build()
 
-dispatcher.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply_message))
 
-@app.route(f'/{TOKEN}', methods=['POST'])
-def respond():
-    update = telegram.Update.de_json(request.get_json(force=True), updater.bot)
-    updater.dispatcher.process_update(update)
-    return 'ok'
+    print("✅ Bot is running...")
+    app.run_polling()
 
-@app.route('/')
-def index():
-    return "Bot is running!"
-
-if __name__ == '__main__':
-    updater.bot.setWebhook(f"{APP_URL}/{TOKEN}")
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    main()
