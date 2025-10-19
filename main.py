@@ -4,7 +4,7 @@ import telegram
 import os
 
 TOKEN = os.getenv("BOT_TOKEN", "8306875717:AAG34WyLvyi9qvCzQ4mppqUpu3TweHSTrO4")
-APP_URL = os.getenv("APP_URL", "https://swapnil31-5.onrender.com")
+APP_URL = os.getenv("APP_URL", "https://swapnil31-6.onrender.com")
 
 app = Flask(__name__)
 
