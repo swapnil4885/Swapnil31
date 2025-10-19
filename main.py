@@ -3,8 +3,8 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import telegram
 import os
 
-TOKEN = os.getenv(8306875717:AAG34WyLvyi9qvCzQ4mppqUpu3TweHSTrO4)
-APP_URL = os.getenv(https://swapnil31-4.onrender.com)
+TOKEN = os.getenv("BOT_TOKEN", "8306875717:AAG34WyLvyi9qvCzQ4mppqUpu3TweHSTrO4")
+APP_URL = os.getenv("APP_URL", "https://swapnil31-4.onrender.com")
 
 app = Flask(__name__)
 
