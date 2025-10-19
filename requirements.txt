@@ -4,4 +4,4 @@ gspread
 oauth2client
 requests
 pyasn1
-python-telegram-bot
+python-telegram-bot==20.3
