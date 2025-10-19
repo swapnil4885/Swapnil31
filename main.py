@@ -1,21 +1,31 @@
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+from flask import Flask, request
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import telegram
+import os
 
-# /start command
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 नमस्कार Swapnil! Bot चालू आहे 🚀")
+TOKEN = os.getenv(8306875717:AAG34WyLvyi9qvCzQ4mppqUpu3TweHSTrO4)
+APP_URL = os.getenv(https://swapnil31-3.onrender.com)
 
-# Any text message
-async def reply_msg(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("📨 Swapnil, तुझा मेसेज मिळाला! (Sheet शी कनेक्शन नाही).")
+app = Flask(__name__)
 
-def main():
-    app = ApplicationBuilder().token("8306875717:AAG34WyLvyi9qvCzQ4mppqUpu3TweHSTrO4").build()
+updater = Updater(TOKEN, use_context=True)
+dispatcher = updater.dispatcher
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply_msg))
+def start(update, context):
+    update.message.reply_text("नमस्कार Swapnil! तुझा bot चालू आहे 🚀")
 
-    app.run_polling()
+dispatcher.add_handler(CommandHandler("start", start))
 
-if __name__ == "__main__":
-    main()
+@app.route(f'/{TOKEN}', methods=['POST'])
+def respond():
+    update = telegram.Update.de_json(request.get_json(force=True), updater.bot)
+    updater.dispatcher.process_update(update)
+    return 'ok'
+
+@app.route('/')
+def index():
+    return "Bot is running!"
+
+if __name__ == '__main__':
+    updater.bot.setWebhook(f"{APP_URL}/{TOKEN}")
+    app.run(host='0.0.0.0', port=5000)
