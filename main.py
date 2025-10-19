@@ -1,36 +1,21 @@
-import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-import gspread
-from google.oauth2.service_account import Credentials
-from config import TELEGRAM_BOT_TOKEN, GOOGLE_SHEET_URL, SERVICE_ACCOUNT_FILE
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 
-# Logging setup
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+# /start command
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("👋 नमस्कार Swapnil! Bot चालू आहे 🚀")
 
-# Google Sheets auth
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-client = gspread.authorize(creds)
-sheet = client.open_by_url(GOOGLE_SHEET_URL).sheet1
-
-def start(update, context):
-    update.message.reply_text("🚀 Swapnil Bot Live! Type your message and I’ll save it to Google Sheet.")
-
-def save_message(update, context):
-    user = update.message.from_user
-    text = update.message.text
-    sheet.append_row([user.username or user.first_name, text])
-    update.message.reply_text("✅ Message saved in Google Sheet!")
+# Any text message
+async def reply_msg(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("📨 Swapnil, तुझा मेसेज मिळाला! (Sheet शी कनेक्शन नाही).")
 
 def main():
-    updater = Updater(TELEGRAM_BOT_TOKEN, use_context=True)
-    dp = updater.dispatcher
+    app = ApplicationBuilder().token("8306875717:AAG34WyLvyi9qvCzQ4mppqUpu3TweHSTrO4").build()
 
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, save_message))
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply_msg))
 
-    updater.start_polling()
-    updater.idle()
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
